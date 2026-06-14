@@ -11,6 +11,7 @@ from kivy.properties import NumericProperty
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 
+
 class Menu(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
@@ -38,7 +39,8 @@ class Settings(Screen):
     def go_menu(self, *args):
         self.manager.current = "menu"
         self.manager.transition.direction = "down"
-        
+
+
 # КЛАС РИБИ: Обробка кліків, створення "нової" риби
 class Fish(Image):
     # Властивість для забезпечення програвання однієї анімації в один проміжок часу
@@ -54,7 +56,7 @@ class Fish(Image):
     defeate_music = SoundLoader.load('assets/audios/fish_def.ogg')
 
     def on_kv_post(self, base_widget):
-        self.GAME_SCREEN = self.parent.parent.parent 
+        self.GAME_SCREEN = self.parent.parent.parent
 
         return super().on_kv_post(base_widget)
 
@@ -66,9 +68,9 @@ class Fish(Image):
         self.swim()
 
     def swim(self):
-        self.pos = (self.GAME_SCREEN.x - self.width, self.GAME_SCREEN.height / 2) 
+        self.pos = (self.GAME_SCREEN.x - self.width, self.GAME_SCREEN.height / 2)
         self.opacity = 1
-        swim = Animation(x = self.GAME_SCREEN.width / 2 - self.width / 2, duration = 1)
+        swim = Animation(x=self.GAME_SCREEN.width / 2 - self.width / 2, duration=1)
         swim.start(self)
 
         swim.bind(on_complete=lambda w, a: setattr(self, "interaction_block", False))
@@ -77,8 +79,8 @@ class Fish(Image):
     def defeated(self):
         self.interaction_block = True
         # Анімація обертання
-        anim = Animation(angle = self.angle + 360, d = 1, t='in_cubic')
-        
+        anim = Animation(angle=self.angle + 360, d=1, t='in_cubic')
+
         # Запам'ятовуємо старі розмір і позицію для анімації зменшення
         old_size = self.size.copy()
         old_pos = self.pos.copy()
@@ -87,15 +89,16 @@ class Fish(Image):
         # Нова позиція риби при збільшенні
         new_pos = (self.pos[0] - (new_size[0] - self.size[0]) / 2, self.pos[1] - (new_size[0] - self.size[1]) / 2)
         # АНІМАЦІЯ ЗБІЛЬШЕННЯ/ЗМЕНШЕННЯ
-        anim &= Animation(size=(new_size), t='in_out_bounce') + Animation(size=(old_size), duration = 0)
-        anim &= Animation(pos=(new_pos), t='in_out_bounce') + Animation(pos=(old_pos), duration = 0)
-        anim &= Animation(opacity = 0)# + Animation(opacity = 1)
+        anim &= Animation(size=(new_size), t='in_out_bounce') + Animation(size=(old_size), duration=0)
+        anim &= Animation(pos=(new_pos), t='in_out_bounce') + Animation(pos=(old_pos), duration=0)
+        anim &= Animation(opacity=0)  # + Animation(opacity = 1)
         anim.start(self)
 
         self.defeate_music.play()
+
     # КЛІК!
     def on_touch_down(self, touch):
-        # Клік не обробляється, якщо не потрпаляє в рибу 
+        # Клік не обробляється, якщо не потрпаляє в рибу
         # або анімація зараз програється або заблокована взаємодія
         if not self.collide_point(*touch.pos) or self.anim_play or self.interaction_block:
             return
@@ -109,12 +112,13 @@ class Fish(Image):
                 old_size = self.size.copy()
                 old_pos = self.pos.copy()
                 # Новий розмір
-                new_size = ( self.size[0] * self.COEF_MULT, self.size[1] * self.COEF_MULT)
+                new_size = (self.size[0] * self.COEF_MULT, self.size[1] * self.COEF_MULT)
                 # Нова позиція риби при збільшенні
-                new_pos = (self.pos[0] - (new_size[0] - self.size[0]) / 2,self.pos[1] - (new_size[0] - self.size[1]) / 2)
+                new_pos = (
+                self.pos[0] - (new_size[0] - self.size[0]) / 2, self.pos[1] - (new_size[0] - self.size[1]) / 2)
                 # АНІМАЦІЯ ЗБІЛЬШЕННЯ/ЗМЕНШЕННЯ
-                zoom_anim = Animation(size=(new_size), duration=0.05) + Animation(size=(old_size), duration = 0.05)
-                zoom_anim &= Animation(pos=(new_pos), duration=0.05) + Animation(pos=(old_pos), duration = 0.05)
+                zoom_anim = Animation(size=(new_size), duration=0.05) + Animation(size=(old_size), duration=0.05)
+                zoom_anim &= Animation(pos=(new_pos), duration=0.05) + Animation(pos=(old_pos), duration=0.05)
 
                 zoom_anim.start(self)
                 self.anim_play = True
@@ -122,7 +126,7 @@ class Fish(Image):
                 zoom_anim.bind(on_complete=lambda *args: setattr(self, "anim_play", False))
             # Клік призвів до знищення риби
             else:
-                self.defeated()     
+                self.defeated()
 
                 # Запуск нової риби або анымації завершення рівня після 1 секунди програвання зникнення риби
                 if len(app.LEVELS[app.LEVEL]) > self.fish_index + 1:
@@ -130,15 +134,15 @@ class Fish(Image):
                     Clock.schedule_once(self.new_fish, 1.2)
                 else:
                     Clock.schedule_once(self.GAME_SCREEN.level_complete, 1.2)
-                           
+
         return super().on_touch_down(touch)
 
 
 class Game(Screen):
     score = NumericProperty(0)
-    back_sound = SoundLoader.load('assets/audios/Black_Swan_part.mp3')
+    back_sound = SoundLoader.load('assets/audios/spongebob-production.mp3')
     back_sound.loop = True
-    level_complete_sound = SoundLoader.load('assets/audios/level_complete.ogg')
+    level_complete_sound = SoundLoader.load('assets/audios/193921.mp3')
 
     def on_pre_enter(self, *args):
         self.score = 0
@@ -147,21 +151,21 @@ class Game(Screen):
         self.ids.fish.fish_index = 0
 
         return super().on_pre_enter(*args)
-    
+
     def on_enter(self, *args):
         label_animation = (
-            Animation(y = (self.height - self.ids.level_title.height) / 2 + dp(100), duration = 1)
-            + Animation(opacity = 1, duration = 1)
-            + Animation(y = self.height, duration = 1)
+                Animation(y=(self.height - self.ids.level_title.height) / 2 + dp(100), duration=1)
+                + Animation(opacity=1, duration=1)
+                + Animation(y=self.height, duration=1)
         )
         # Плавне зникнення напису при спливанні вгору
-        label_animation &= Animation(opacity = 1, duration = 2) + Animation(opacity = 0, duration = 1)
+        label_animation &= Animation(opacity=1, duration=2) + Animation(opacity=0, duration=1)
 
         label_animation.start(self.ids.level_title)
-        label_animation.bind(on_complete = self.start_game)
+        label_animation.bind(on_complete=self.start_game)
 
         self.back_sound.play()
-        
+
         return super().on_enter(*args)
 
     def start_game(self, animation, widget):
@@ -169,16 +173,16 @@ class Game(Screen):
 
     def level_complete(self, *args):
         # self.ids.level_complete.opacity = 1
-        anim_zoom = Animation(font_size = dp(70), d = 0.3)
-        anim_zoom  &= Animation(opacity = 1, d = 0.3)
-        app.LEVEL += 1 
+        anim_zoom = Animation(font_size=dp(70), d=0.3)
+        anim_zoom &= Animation(opacity=1, d=0.3)
+        app.LEVEL += 1
         anim_zoom.start(self.ids.level_complete)
 
         self.back_sound.volume = 0.5
         self.level_complete_sound.play()
 
     def go_home(self):
-        fish_disapear_anim = Animation(opacity = 0, duration=0.1)
+        fish_disapear_anim = Animation(opacity=0, duration=0.1)
         fish_disapear_anim.start(self.ids.fish)
 
         self.back_sound.stop()
@@ -188,16 +192,15 @@ class Game(Screen):
 
 
 class ClickerApp(App):
-
     LEVEL = 0
 
     FISHES = {
-    'fish1':
-        {'source': 'assets/images/fish_01.png', 'hp': 10},
-    'fish2':
-        {'source': 'assets/images/fish_02.png', 'hp': 20},
-    'fish3':
-        {'source': 'assets/images/clown-fish.png', 'hp': 50}
+        'fish1':
+            {'source': 'assets/images/fish_01.png', 'hp': 10},
+        'fish2':
+            {'source': 'assets/images/fish_02.png', 'hp': 20},
+        'fish3':
+            {'source': 'assets/images/clown-fish.png', 'hp': 50}
     }
     LEVELS = [
         ['fish1', 'fish2', 'fish3']
@@ -210,6 +213,7 @@ class ClickerApp(App):
         sm.add_widget(Settings(name="settings"))
 
         return sm
+
 
 if platform != 'android':
     Window.size = (450, 900)
